@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Visual Studio 17 2022",
+      "configurationType": "Debug",
+      "buildRoot": "${workspaceRoot}/out/build/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-m -v:minimal",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "C:/Users/florian/Projekte/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        }
+      ],
+      "inheritEnvironments": [ "msvc_x86_x64" ]
+    }
+  ]
+}

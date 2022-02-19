@@ -182,4 +182,7 @@ typedef struct
 	range_t rho0;
 } channel_t;
 
+int main_(int argc, const char** argv);
+
 #endif
+
