@@ -6,6 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include <zlib.h>
+#include <immintrin.h>
 
 #ifdef _WIN32
 #include "getopt.h"
@@ -666,11 +667,10 @@ void eph2sbf(const ephem_t eph, const ionoutc_t ionoutc, unsigned long sbf[5][N_
 	return;
 }
 
-/*! \brief Count number of bits set to 1
- *  \param[in] v long word in which bits are counted
- *  \returns Count of bits set to 1
- */
-unsigned long countBits(unsigned long v)
+#define countBits(x) __popcnt(x)
+
+// See https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
+unsigned long countBits_(unsigned long v)
 {
 	unsigned long c;
 	const int S[] = { 1, 2, 4, 8, 16 };
@@ -718,9 +718,14 @@ unsigned long computeChecksum(unsigned long source, int nib)
 	D30    00 1011 0111 1010 1000 1001 1100 0000
 	*/
 
-	unsigned long bmask[6] = {
-		0x3B1F3480UL, 0x1D8F9A40UL, 0x2EC7CD00UL,
-		0x1763E680UL, 0x2BB1F340UL, 0x0B7A89C0UL };
+	static const unsigned long bmask[] = {
+		0x3B1F3480UL,
+		0x1D8F9A40UL,
+		0x2EC7CD00UL,
+		0x1763E680UL,
+		0x2BB1F340UL,
+		0x0B7A89C0UL
+	};
 
 	unsigned long D;
 	unsigned long d = source & 0x3FFFFFC0UL;
@@ -744,12 +749,12 @@ unsigned long computeChecksum(unsigned long source, int nib)
 	if (D30)
 		D ^= 0x3FFFFFC0UL;
 
-	D |= ((D29 + countBits(bmask[0] & d)) % 2) << 5;
-	D |= ((D30 + countBits(bmask[1] & d)) % 2) << 4;
-	D |= ((D29 + countBits(bmask[2] & d)) % 2) << 3;
-	D |= ((D30 + countBits(bmask[3] & d)) % 2) << 2;
-	D |= ((D30 + countBits(bmask[4] & d)) % 2) << 1;
-	D |= ((D29 + countBits(bmask[5] & d)) % 2);
+	D |= ((D29 + countBits(bmask[0] & d)) % 2) << 5
+		| ((D30 + countBits(bmask[1] & d)) % 2) << 4
+		| ((D29 + countBits(bmask[2] & d)) % 2) << 3
+		| ((D30 + countBits(bmask[3] & d)) % 2) << 2
+		| ((D30 + countBits(bmask[4] & d)) % 2) << 1
+		| ((D29 + countBits(bmask[5] & d)) % 2);
 
 	D &= 0x3FFFFFFFUL;
 	//D |= (source & 0xC0000000UL); // Add D29* and D30* from source data bits
@@ -1689,7 +1694,7 @@ static void args_err(const char* msg, int argc, const char** argv)
 }
 
 
-int main_(int argc, const char** argv)
+int main_(int argc, char** argv)
 {
 	clock_t tstart, tend;
 

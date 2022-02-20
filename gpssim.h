@@ -1,5 +1,4 @@
-#ifndef GPSSIM_H
-#define GPSSIM_H
+#pragma once
 
 #define FLOAT_CARR_PHASE // For RKT simulation. Higher computational load, but smoother carrier phase.
 
@@ -182,7 +181,6 @@ typedef struct
 	range_t rho0;
 } channel_t;
 
-int main_(int argc, const char** argv);
-
-#endif
+int main_(int argc, char** argv);
+unsigned long countBits(unsigned long v);
 

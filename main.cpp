@@ -4,8 +4,11 @@
 
 #define CATCH_CONFIG_RUNNER
 #include <catch.hpp>
+#include <benchmark/benchmark.h>
 
 #include <boost/program_options.hpp>
+
+#define BITCOUNT
 
 namespace po = boost::program_options;
 
@@ -77,6 +80,9 @@ int parse_cmd_args(int argc, char** argv)
 
 int run_tests(int argc, char** argv)
 {
+	::benchmark::Initialize(&argc, argv);
+	::benchmark::RunSpecifiedBenchmarks();
+
 	return Catch::Session().run(argc, argv);
 }
 
@@ -86,8 +92,8 @@ int main(int argc, char** argv)
 	int err = run_tests(argc, argv);
 	//parse_cmd_args(argc, argv);
 	
-	char t;
-	std::cin.read(&t, 1);
+	//char t;
+	//std::cin.read(&t, 1);
 
 	return err;
 }
